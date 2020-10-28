@@ -32,7 +32,7 @@
         * 복합 단어일 때는 두번째   단어부터 단어의 **첫 자만**   대문자로 표기한다.
             * ex) boolean isEmpty;
     * `클래스`와 `인터페이스`는 **첫 자만 대문자**로표기하고 나머지는소문자로 표기한다.
-        * ex) public classSource1{}
+        * ex) public class Source1{}
         * 복합 단어일 때는 첫번째   단어와 두 번째 단어**첫   자만** 대문자로표기한다.
             * public class HelloDemo {}
 
