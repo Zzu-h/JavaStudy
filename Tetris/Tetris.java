@@ -1,148 +1,260 @@
-package project.assignment;
-
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 
-public class Tetris extends JFrame implements ActionListener {
+class JLabelData extends JLabel{
+    public int data = 0;
+}
 
-	int x_size = 500;
-	int y_size = 800;
-	int Grid_y = 22;
-	int Grid_x = 10;
-	JPanel Tet;
-	JPanel[][] Tlayout;
+public class Tetris extends JFrame implements ActionListener{
+    Thread t1;
+    Thread t2;
 
-	public Tetris() {
-		// TODO Auto-generated constructor stub
-		setTitle("Å×Æ®¸®½º");
+    int x_size = 500;
+    int y_size = 800;
+    int Grid_y = 22;
+    int Grid_x = 10;
 
-		Tet = new JPanel(new GridLayout((Grid_y), (Grid_x)));
-		Tlayout = new JPanel[Grid_y][Grid_x];
+    final int null_ = 5;
 
-		add(Tet);
-		makeMenu();
-		makeLayout();
+    int temp_count = 22;
+    final Color LG = Color.LIGHT_GRAY;
+    JPanel Tet;
+    JPanel[][] Tlayout;
+    JLabelData[][] jld;
+    JLabelData[][] jld_temp;
+    public Tetris() {
+        // TODO Auto-generated constructor stub
+        setTitle("í…ŒíŠ¸ë¦¬ìŠ¤");
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(x_size, y_size);
-		setVisible(true);
-	}
+        Tet = new JPanel(new GridLayout((Grid_y), (Grid_x)));
+        Tlayout = new JPanel[Grid_y + null_][Grid_x + null_];
+        jld = new JLabelData[Grid_y + null_][Grid_x + null_];
+        jld_temp = new JLabelData[Grid_y + null_][Grid_x + null_];
+        add(Tet);
+        makeMenu();
+        makeLayout();
 
-	private void makeMenu() {
-		JMenuItem item;
-		KeyStroke key;
+        t1 = new Thread();
+        t1.start();
 
-		JMenuBar mb = new JMenuBar();
-		JMenu m1 = new JMenu("°ÔÀÓ");
-		m1.setMnemonic(KeyEvent.VK_F);
-		JMenu m2 = new JMenu("´õº¸±â");
-		m1.setMnemonic(KeyEvent.VK_C);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(x_size, y_size);
+        setVisible(true);
+    }
 
-		item = new JMenuItem("»õ °ÔÀÓ ½ÃÀÛÇÏ±â", KeyEvent.VK_O);
-		item.addActionListener(this);
-		m1.add(item);
+    private void makeMenu() {
+        JMenuItem item;
+        KeyStroke key;
 
-		m1.addSeparator();
+        JMenuBar mb = new JMenuBar();
+        JMenu m1 = new JMenu("ê²Œì„");
+        m1.setMnemonic(KeyEvent.VK_F);
+        JMenu m2 = new JMenu("ë”ë³´ê¸°");
+        m1.setMnemonic(KeyEvent.VK_C);
 
-		item = new JMenuItem("°ÔÀÓ ÀúÀå", KeyEvent.VK_N);
-		item.addActionListener(this);
-		m1.add(item);
+        item = new JMenuItem("ìƒˆ ê²Œì„ ì‹œì‘í•˜ê¸°", KeyEvent.VK_O);
+        item.addActionListener(this);
+        m1.add(item);
 
-		item = new JMenuItem("°ÔÀÓ ºÒ·¯¿À±â", KeyEvent.VK_O);
-		item.addActionListener(this);
-		m1.add(item);
+        m1.addSeparator();
 
-		m1.addSeparator();
+        item = new JMenuItem("ê²Œì„ ì €ì¥", KeyEvent.VK_N);
+        item.addActionListener(this);
+        m1.add(item);
 
-		item = new JMenuItem("°ÔÀÓ Á¾·á", KeyEvent.VK_O);
-		item.addActionListener(this);
-		m1.add(item);
+        item = new JMenuItem("ê²Œì„ ë¶ˆëŸ¬ì˜¤ê¸°", KeyEvent.VK_O);
+        item.addActionListener(this);
+        m1.add(item);
 
-		item = new JMenuItem("ÇÁ·Î±×·¥ Á¾·á", KeyEvent.VK_O);
-		item.addActionListener(this);
-		m1.add(item);
+        m1.addSeparator();
 
-		item = new JMenuItem("ÆÄ¶õ»ö");
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.CTRL_MASK);
-		item.setAccelerator(key);
-		item.addActionListener(this);
-		m2.add(item);
+        item = new JMenuItem("ê²Œì„ ì¢…ë£Œ", KeyEvent.VK_O);
+        item.addActionListener(this);
+        m1.add(item);
 
-		item = new JMenuItem("»¡°£»ö");
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK);
-		item.setAccelerator(key);
-		item.addActionListener(this);
-		m2.add(item);
+        item = new JMenuItem("í”„ë¡œê·¸ë¨ ì¢…ë£Œ", KeyEvent.VK_O);
+        item.addActionListener(this);
+        m1.add(item);
 
-		item = new JMenuItem("³ë¶õ»ö");
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK);
-		item.setAccelerator(key);
-		item.addActionListener(this);
-		m2.add(item);
+        item = new JMenuItem("íŒŒë€ìƒ‰");
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.CTRL_MASK);
+        item.setAccelerator(key);
+        item.addActionListener(this);
+        m2.add(item);
 
-		mb.add(m1);
-		mb.add(m2);
-		setJMenuBar(mb);
-	}
+        item = new JMenuItem("ë¹¨ê°„ìƒ‰");
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK);
+        item.setAccelerator(key);
+        item.addActionListener(this);
+        m2.add(item);
 
-	private void makeLayout() {
-		Tet.setLayout(new GridLayout(Grid_y, Grid_x));
-		for (int y = 0; y < Grid_y; y++)
-			for (int x = 0; x < Grid_x; x++) {
-				Tlayout[y][x] = new JPanel();
-				Tlayout[y][x].add(new JLabel());
-				Tlayout[y][x].setBorder(new LineBorder(Color.BLACK));
-				Tlayout[y][x].setBackground(Color.LIGHT_GRAY);
-				Tet.add(Tlayout[y][x]);
-			}
+        item = new JMenuItem("ë…¸ë€ìƒ‰");
+        key = KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK);
+        item.setAccelerator(key);
+        item.addActionListener(this);
+        m2.add(item);
 
-	}
+        mb.add(m1);
+        mb.add(m2);
+        setJMenuBar(mb);
+    }
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		new Tetris();
-	}
+    private void makeLayout() {
+        Tet.setLayout(new GridLayout(Grid_y, Grid_x));
+        for (int y = 0; y < Grid_y; y++)
+            for (int x = 0; x < Grid_x; x++) {
+                Tlayout[y][x] = new JPanel();
+                jld[y][x] = new JLabelData();
+                jld_temp[y][x] = new JLabelData();
+                Tlayout[y][x].add(jld[y][x]);
+                Tlayout[y][x].setBorder(new LineBorder(Color.BLACK));
+                Tlayout[y][x].setBackground(LG);
+                Tet.add(Tlayout[y][x]);
+            }
+        for (int i = 0; i < null_; i++)
+            for (int j = 0; j < Grid_x; j++) {
+                Tlayout[Grid_y+i][j] = new JPanel();
+                jld[Grid_y+i][j] = new JLabelData();
+                jld[Grid_y+i][j].data = 1;
+                Tlayout[Grid_y+i][j].add(jld[Grid_y+i][j]);
+                jld_temp[Grid_y+i][j] = new JLabelData();
+            }
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		JMenuItem mi = (JMenuItem) (e.getSource());
-		switch (mi.getText()) {
-		case "»õ °ÔÀÓ ½ÃÀÛÇÏ±â":
-			System.out.println("»õ ÆÄÀÏ");
-			break;
-		case "°ÔÀÓ ÀúÀå":
-			System.out.println("»õ ÆÄÀÏ");
-			break;
-		case "°ÔÀÓ ºÒ·¯¿À±â":
-			System.out.println("ÆÄÀÏ ¿­±â");
-			break;
-		case "°ÔÀÓ Á¾·á":
-			System.out.println("ÆÄÀÏ ÀúÀå");
-			break;
-		case "ÇÁ·Ï¸£·¥ Á¾·á":
-			System.out.println("ÆÄÀÏ ÀúÀå");
-			break;
-		case "ÆÄ¶õ»ö":
-			this.getContentPane().setBackground(Color.BLUE);
-			break;
-		case "»¡°£»ö":
-			this.getContentPane().setBackground(Color.RED);
-			break;
-		case "³ë¶õ»ö":
-			this.getContentPane().setBackground(Color.YELLOW);
-			break;
-		}
-	}
+    }
+
+
+
+    private Block createBlock(){
+        int RandNum = (int)((Math.random() * 10) % 7);
+        if(RandNum == 0)
+            return new Iblock();
+        else if(RandNum == 1)
+            return new Jblock();
+        else if(RandNum == 2)
+            return new Lblock();
+        else if(RandNum == 3)
+            return new Oblock();
+        else if(RandNum == 4)
+            return new Sblock();
+        else if(RandNum == 5)
+            return new Tblock();
+        else if(RandNum == 6)
+            return new Zblock();
+        return new Iblock();
+    }
+    private void BlockRun(){
+        saveData();
+
+        try {
+            boolean flag = false;
+            Block newBlock = createBlock();
+            for (int y = 0; y < Grid_y; y++) {
+                //í•˜ê°• forë¬¸
+                int x = newBlock.x;
+                int r = newBlock.rotation;
+
+                for (int h = 0; h < newBlock.height; h++){
+                    for(int w = 0; w< newBlock.width; w++){
+                        //int temp =
+                        if(newBlock.shape[r][w][h] == 1) {
+                            jld[h + y][w + x].data = newBlock.shape[r][w][h];
+                        }
+                        if((newBlock.shape[r][w][h] == 1)&&(newBlock.shape[r][w][h] == jld[h + y + 1][w+x].data)){
+                            flag = true;
+                        }
+                        /*if (newBlock.shape[r][w][h] == 0) {
+                            Tlayout[h + y][w + x].setBackground(LG);
+                        } else {
+                            Tlayout[h + y][w + x].setBackground(Color.BLUE);
+                            if (Tlayout[h + y + 1][w + x].getBackground() == Tlayout[h + y][w + x].getBackground())
+                                break;//ìŒ“ì¸ ë¸”ëŸ­ê³¼ ë§Œë‚¬ì„ ë•Œ
+                            else if ((h + y) == Grid_y)
+                                break;//ë°”ë‹¥ì— ë‹¿ì˜€ì„ ë•Œ
+                        }*/
+                    }
+                }
+                setupLayout();
+                if(flag)
+                    return;
+                loadData();
+                Thread.sleep(200);
+            }
+
+            Thread.sleep(800);
+        }catch (Exception e){
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    private void setupLayout(){
+        for (int y = 0; y < Grid_y; y++)
+            for (int x = 0; x < Grid_x; x++){
+                if(jld[y][x].data == 0)
+                    Tlayout[y][x].setBackground(LG);
+                else
+                    Tlayout[y][x].setBackground(Color.BLUE);
+            }
+    }
+    void saveData(){
+        for (int y = 0; y < Grid_y; y++)
+            for (int x = 0; x < Grid_x; x++){
+                jld_temp[y][x].data = jld[y][x].data;
+            }
+    }
+    void loadData(){
+        for (int y = 0; y < Grid_y; y++)
+            for (int x = 0; x < Grid_x; x++){
+                jld[y][x].data = jld_temp[y][x].data;
+            }
+        for (int i = 0; i < null_; i++)
+            for (int j = 0; j < Grid_x; j++) {
+                jld[Grid_y+i][j].data = 1;
+            }
+    }
+
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        Tetris T = new Tetris();
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JMenuItem mi = (JMenuItem) (e.getSource());
+        switch (mi.getText()) {
+            case "ìƒˆ ê²Œì„ ì‹œì‘í•˜ê¸°":
+                System.out.println("ìƒˆ íŒŒì¼");
+                break;
+            case "ê²Œì„ ì €ì¥":
+                System.out.println("ìƒˆ íŒŒì¼");
+                break;
+            case "ê²Œì„ ë¶ˆëŸ¬ì˜¤ê¸°":
+                System.out.println("íŒŒì¼ ì—´ê¸°");
+                break;
+            case "ê²Œì„ ì¢…ë£Œ":
+                System.out.println("íŒŒì¼ ì €ì¥");
+                break;
+            case "í”„ë¡œê·¸ë¨ ì¢…ë£Œ":
+                System.out.println("íŒŒì¼ ì €ì¥");
+                break;
+            case "íŒŒë€ìƒ‰":
+                this.getContentPane().setBackground(Color.BLUE);
+                break;
+            case "ë¹¨ê°„ìƒ‰":
+                this.getContentPane().setBackground(Color.RED);
+                break;
+            case "ë…¸ë€ìƒ‰":
+                this.getContentPane().setBackground(Color.YELLOW);
+                break;
+        }
+    }
+
 }
