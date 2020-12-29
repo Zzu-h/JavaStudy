@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,11 +15,12 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 public class TetrisUI extends JFrame implements ActionListener {
-	int x_size = 10;
-	int y_size = 22;
+	private int x_size = 10;
+	private int y_size = 22;
 
-	JPanel[][] tetris = new JPanel[y_size][x_size];
-	JLabel score = new JLabel("0");
+	private JPanel[][] tetris = new JPanel[y_size][x_size];
+	private JLabel score = new JLabel();
+
 	public TetrisUI() {
 		// TODO Auto-generated constructor stub
 		setTitle("MyTetris");
@@ -25,57 +28,56 @@ public class TetrisUI extends JFrame implements ActionListener {
 		menuBar();
 		mainUI();
 		scoreBoard();
-		
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(x_size*50,y_size*45);
 		setVisible(true);
 	}
-	void menuBar() {
+	private void menuBar() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenuItem item;
-		JMenu menu = new JMenu("°ÔÀÓ");
-		
-		item = new JMenuItem("»õ °ÔÀÓ ½ÃÀÛ");
+		JMenu menu = new JMenu("ê²Œì„");
+
+		item = new JMenuItem("ìƒˆ ê²Œì„ ì‹œì‘", 83);
 		item.addActionListener(this);
 		menu.add(item);
-		
+
 		menu.addSeparator();
-		
-		item = new JMenuItem("°ÔÀÓ ÀúÀå");
+
+		item = new JMenuItem("ê²Œì„ ì €ì¥");
 		item.addActionListener(this);
 		menu.add(item);
-		
-		item = new JMenuItem("°ÔÀÓ ºÒ·¯¿À±â");
+
+		item = new JMenuItem("ê²Œì„ ë¶ˆëŸ¬ì˜¤ê¸°");
 		item.addActionListener(this);
 		menu.add(item);
-		
+
 		menu.addSeparator();
-		
-		item = new JMenuItem("°ÔÀÓ Á¾·á");
+
+		item = new JMenuItem("ê²Œì„ ì¢…ë£Œ");
 		item.addActionListener(this);
 		menu.add(item);
-		
-		item = new JMenuItem("ÇÁ·Î±×·¥ Á¾·á");
+
+		item = new JMenuItem("í”„ë¡œê·¸ë¨ ì¢…ë£Œ");
 		item.addActionListener(this);
 		menu.add(item);
-		
+
 		menuBar.add(menu);
-		
-		
-		menu = new JMenu("Ãß°¡");
-		item = new JMenuItem("µµ¿ò¸»");
+
+
+		menu = new JMenu("ì¶”ê°€");
+		item = new JMenuItem("ë„ì›€ë§");
 		item.addActionListener(this);
 		menu.add(item);
-		
+
 		menuBar.add(menu);
-		
+
 		setJMenuBar(menuBar);
 	}
-	void mainUI() {
+	private void mainUI() {
 		JPanel mainUI = new JPanel();
 		mainUI.setLayout(new GridLayout(y_size,x_size));
-		
+
 		for(int y = 0;y<y_size;y++){
 			for(int x=0;x<x_size;x++)  {
 				tetris[y][x] = new JPanel();
@@ -84,12 +86,12 @@ public class TetrisUI extends JFrame implements ActionListener {
 				mainUI.add(tetris[y][x]);
 			}
 		}
-		
-		
+
+
 		mainUI.setBackground(Color.orange);
 		add(mainUI, BorderLayout.CENTER);
 	}
-	void setLayout(int arr[][]) {
+	public void setLayout(int arr[][]) {
 		for(int y = 0;y<y_size;y++){
 			for(int x=0;x<x_size;x++)  {
 				if(arr[y][x] == 1)
@@ -99,40 +101,49 @@ public class TetrisUI extends JFrame implements ActionListener {
 			}
 		}
 	}
-	
-	void scoreBoard() {
+
+	private void scoreBoard() {
 		JPanel board = new JPanel();
-		
+
 		board.add(score);
 		board.setBorder(new LineBorder(Color.BLACK));
 		board.setBackground(Color.white);
 		add(board, BorderLayout.SOUTH);
 	}
-	void setScore(int point) {
+	public void setScore(int point) {
 		this.score.setText(""+point);
 	}
-	
+	public void setText(String str){
+		this.score.setText(str);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		switch (e.getActionCommand()) {
-		case "»õ °ÔÀÓ ½ÃÀÛ":
-			GameState.State = 2;
-			break;
-		case "°ÔÀÓ ÀúÀå":
-			GameState.State = 3;
-			break;
-		case "°ÔÀÓ ºÒ·¯¿À±â":
-			GameState.State = 4;
-			break;
-		case "ÇÁ·Î±×·¥ Á¾·á":
-			System.exit(0);
-			break;
-		case "°ÔÀÓ Á¾·á":
-			GameState.State = 4;
-			break;
-		default:
-			break;
+			case "ìƒˆ ê²Œì„ ì‹œì‘":
+				if(GameState.GameRun())
+					System.out.println("Game Run!!");
+				break;
+			case "ê²Œì„ ì €ì¥":
+				if(GameState.GameSave())
+					System.out.println("Successfully saved");
+				break;
+			case "ê²Œì„ ë¶ˆëŸ¬ì˜¤ê¸°":
+				if(GameState.GameLoad())
+					System.out.println("Successfully loaded");					;
+				break;
+			case "í”„ë¡œê·¸ë¨ ì¢…ë£Œ":
+				if(GameState.GameEnd())
+					GameState.State = 4;
+				System.exit(0);
+				break;
+			case "ê²Œì„ ì¢…ë£Œ":
+				if(GameState.GameEnd())
+					GameState.State = 4;
+				break;
+			default:
+				break;
 		}
 	}
 }

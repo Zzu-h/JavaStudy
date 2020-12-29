@@ -9,11 +9,11 @@ public abstract class Block {
 	
 
 	public int RightRotate() {
-		return ((rotation + 1) % NumOfRotation);
+		return rotation = ((rotation + 1) % NumOfRotation);
 	}
 
 	public int LeftRotate() {
-		return (((rotation - 1) + NumOfRotation) % NumOfRotation);
+		return rotation = (((rotation - 1) + NumOfRotation) % NumOfRotation);
 	}
 	
 	public int rShift() {
